@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulating 3D Solar System</title>
+    <style>
+        #canvas_3d {
+            width: 600px;
+            height: 600px;
+            /* background-color: aliceblue; */
+        }
+        #canvas_top {
+            width: 600px;
+            height: 600px;
+        }
+        #canvas_left {
+            width: 600px;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas_3d"></div>
+    <div id="canvas_top"></div>
+    <div id="canvas_left"></div> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script>
+        window.onload = function() {
+            // 创建场景
+            var scene = new THREE.Scene();
+
+        //-------------------------3种视图的相机角度---------------------------------
+            // Side view camera
+            var cameraSide = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            cameraSide.position.set(0, 0, 30);
+            cameraSide.lookAt(new THREE.Vector3(0, 0, 0));
+            scene.add(cameraSide);
+            // Top view camera
+            var cameraTop = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            cameraTop.position.set(0,120, 0);
+            cameraTop.lookAt(new THREE.Vector3(0, 0, 0));
+            scene.add(cameraTop);
+            // 3D view camera
+            var camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera3D.position.set(50,50,50);
+            camera3D.lookAt(new THREE.Vector3(0, 0, 0));
+            scene.add(camera3D);
+        //------------------------------------------------------------------------
+
+            // 创建渲染器
+            var renderer3D = new THREE.WebGLRenderer({ antialias: true });
+            renderer3D.setSize(window.innerWidth, window.innerHeight);
+
+            var rendererSide = new THREE.WebGLRenderer({ antialias: true });
+            rendererSide.setSize(window.innerWidth, window.innerHeight);
+
+            var rendererTop = new THREE.WebGLRenderer({ antialias: true });
+            rendererTop.setSize(window.innerWidth, window.innerHeight);
+            // 将渲染器添加到HTML文档中的canvas元素中
+            document.getElementById("canvas_3d").appendChild(renderer3D.domElement);
+            document.getElementById("canvas_left").appendChild(rendererSide.domElement);
+            document.getElementById("canvas_top").appendChild(rendererTop.domElement);
+            // document.getElementById("canvas_left").appendChild(renderer.domElement);
+            // 创建太阳的几何体
+            var sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+            // 创建太阳的材质
+            var sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            // 创建太阳的网格
+            var sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            // 将太阳添加到场景中
+            scene.add(sun);
+
+           
+            // 创建地球公转的轨道
+            var earthOrbit = new THREE.Object3D();
+            earthOrbit.position.set(0, 0, 0);
+            // earthOrbit.rotation.x = THREE.Math.degToRad(30); // 运行角度
+            // 将地球公转的轨道添加到场景中
+            scene.add(earthOrbit);
+            // 创建地球的几何体
+            var earthGeometry = new THREE.SphereGeometry(1, 32, 32);
+            // 创建地球的材质
+            var earthMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+            // 创建地球的网格
+            var earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            // 将地球添加到地球公转的轨道上
+            earth.position.set(20, 0, 0);
+            earthOrbit.add(earth);
+
+            // 创建地球公转轨道的几何体
+            var earthOrbitGeometry = new THREE.CircleGeometry(20, 1024);
+            earthOrbitGeometry.vertices.shift(); // Remove the center vertex
+            earthOrbitGeometry.rotateX(Math.PI / 2); // 轨道角度
+            var earthOrbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+            var earthOrbitLine = new THREE.LineLoop(earthOrbitGeometry, earthOrbitMaterial);
+            scene.add(earthOrbitLine);
+
+
+
+            // 创建月球的公转轨道几何体
+            var moonOrbitGeometry = new THREE.CircleGeometry(2, 64);
+            moonOrbitGeometry.vertices.shift(); // Remove the center vertex
+            moonOrbitGeometry.rotateX(Math.PI / 2); // Rotate the geometry to align with the XY plane
+            var moonOrbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+            var moonOrbitLine = new THREE.LineLoop(moonOrbitGeometry, moonOrbitMaterial);
+            earth.add(moonOrbitLine);
+
+            // 创建月球的几何体
+            var moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            // 创建月球的材质
+            var moonMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+            // 创建月球的网格
+            var moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            // 将月球添加到地球上
+            moon.position.set(2, 0, 0);
+            earth.add(moon);
+
+
+            // 设置相机的位置
+            camera3D.position.z = 40;
+            cameraSide.position.z = 40;
+            cameraTop.position.z = 40;
+
+
+            // 动画函数
+            function animate() {
+                // 请求动画帧
+                requestAnimationFrame(animate);
+                // 地球公转的轨道绕Y轴旋转
+                earthOrbit.rotation.y += 0.01;
+                // 地球绕Y轴旋转
+                earth.rotation.y += 0.05;
+                // 月球绕Y轴旋转
+                moon.rotation.y += 0.1;
+                // 渲染场景和相机
+                // renderer3D.render(scene, camera3D);
+                // rendererSide.render(scene, cameraSide);
+                // rendererTop.render(scene, cameraTop);
+
+                // Render 3D view/3
+                renderer3D.setViewport(0,0,window.innerWidth,window.innerHeight);
+                renderer3D.render(scene, camera3D);
+                
+                rendererSide.setViewport(0,0, window.innerWidth, window.innerHeight);
+                rendererSide.render(scene, cameraSide);
+                // // Render top view
+                rendererTop.setViewport(0,0, window.innerWidth, window.innerHeight);
+                rendererTop.render(scene, cameraTop);
+                // Render 3D view/3
+                // renderer3D.setViewport(0,0,window.innerWidth,window.innerHeight);
+                // renderer3D.render(scene, camera3D);
+            }
+            // 调用动画函数
+            animate();
+};
+    </script>
+</body>
+</html>

@@ -4,28 +4,15 @@
     <title>Simulating 3D Solar System</title>
     <style>
         #canvas_3d {
-            /* width: 800px;
-            height: 600px; */
             position: relative;
-            /* top:-140px; */
         }
-        /* #canvas_top {
-            /* width: 600px;
-            height: 600px; */
-            /* position:relative;
-            left:-159px; */
-
-        /* }  */
         #canvas_left {
-            /* width: 600px;
-            height: 600px; */
             position: relative;
             left:-40px;
         }
         ul{
             display: flex;
             list-style: none;
-            /* margin: 0px; */
         }
         #change{
             height:200px;
@@ -33,6 +20,13 @@
             position: relative;
             top:-700px;
         }
+
+        #myCanvas,#myCanvas1{
+            position:relative;
+            top:-900px;
+            left:200px;
+        }
+
         
     </style>
 </head>
@@ -41,21 +35,26 @@
         <li><div id="canvas_left"></div></li>
         <li><div id="canvas_top"></div></li>
     </ul>
-    <!-- <div id="canvas_top"></div>
-    <div id="canvas_left"></div>  -->
     <div id="canvas_3d">
         <button id="change">切换</button>
     </div>
+    <canvas id="myCanvas" width="200" height="200"></canvas>
+    <canvas id="myCanvas1" width="200" height="200"></canvas>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script>
         var change=0; //初始地球图片
+        var begin=false;
         window.onload = function() {
             // 创建场景
             var scene = new THREE.Scene();
-            var sunPictureUrl="http://192.168.1.8:8080/web/Web-Work/sun.png";
-            var earthPictureUrl="http://192.168.1.8:8080/web/Web-Work/earth.png";
-            var moonPictureUrl="http://192.168.1.8:8080/web/Web-Work/moon.png";
-            var new_earthPictureUrl="http://192.168.1.8:8080/web/Web-Work/new_earth.png";
+
+            //update your URL------------------------------------------------------------------------
+            var sunPictureUrl="http://127.0.0.1:8080/web/Web-Work/sun.png";
+            var earthPictureUrl="http://127.0.0.1:8080/web/Web-Work/earth.png";
+            var moonPictureUrl="http://127.0.0.1:8080/web/Web-Work/moon2.png";
+            var new_earthPictureUrl="http://127.0.0.1:8080/web/Web-Work/new_earth2.png";
+            //---------------------------------------------------------------------------------------
 
 
             var textureLoader=new THREE.TextureLoader();
@@ -63,6 +62,37 @@
             var earthPicture=textureLoader.load(earthPictureUrl);
             var moonPicture=textureLoader.load(moonPictureUrl);
             var new_earthPicture=textureLoader.load(new_earthPictureUrl);
+
+            const canvas1 = document.getElementById("myCanvas1");
+            const ctx1 = canvas1.getContext("2d");
+
+            let sunX1=canvas1.width/2;
+            let sunY1=canvas1.height/2;
+
+            let moonX1=sunX1-100;
+            let moonY1=sunY1+20;
+
+            const init_moonX1=moonX1;
+            const init_moonY1=moonY1;
+
+            let moonVX1=1;
+            let moonVY1=-0.2;
+
+
+            const canvas = document.getElementById("myCanvas");
+            const ctx = canvas.getContext("2d");
+
+            let sunX=canvas.width/2;
+            let sunY=canvas.height/2;
+
+            let moonX=sunX-100;
+            let moonY=sunY+20;
+
+            const init_moonX=moonX;
+            const init_moonY=moonY;
+
+            let moonVX=1;
+            let moonVY=-0.2;
 
             document.getElementById("change").addEventListener('click',function(){
                 if(change==0){
@@ -74,6 +104,23 @@
                     change=0;
                 }
             });
+
+
+            // Load the image
+            const image = new Image();
+            const image1 = new Image();
+
+            //update your URL---------------------------------------------------------------
+            image.src = "/home/wenyu/web/Web-Work/moon_2d.png";
+            image1.src = "/home/wenyu/web/Web-Work/sun_2d.png";
+            //update your URL---------------------------------------------------------------
+
+            image.onload = function() {
+                animate();
+            };
+            image1.onload = function() {
+                animate();
+            };
 
         //-------------------------3种视图的相机角度---------------------------------
             // Side view camera
@@ -178,15 +225,88 @@
 
             // 动画函数
             function animate() {
+
+                moonX+=moonVX;
+                moonY+=moonVY;
+                // Clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw the main animation
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.beginPath();
+                // ctx.fillStyle="black";
+                ctx.arc(sunX,sunY,50,0,2*Math.PI);
+                ctx.drawImage(image, sunX-50, sunY-50, 100, 100);
+                // ctx.fillStyle="red";
+                // ctx.fill();
+                ctx.closePath();
+                // Check for boundaries and change direction if needed
+
+                ctx.beginPath();
+                ctx.arc(moonX,moonY,45,0,2*Math.PI);
+                ctx.fillStyle="black";
+                ctx.fill();
+                ctx.closePath();
+            
+                if(moonX-sunX>200){
+                    moonX=init_moonX;
+                    moonY=init_moonY;
+                    moonVY=-moonVY;
+                }
+                if(moonX-sunX>100){
+                    begin=true;
+                }
+                if(moonY-sunY<0){
+                    moonVY=-moonVY;
+                }
+
+
+
+                if(begin){
+                    moonX1+=moonVX1;
+                    moonY1+=moonVY1;
+                }
+                // Clear the canvas
+                ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+                // Draw the main animation
+                ctx1.fillStyle = "black";
+                ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+                
+                ctx1.beginPath();
+                // ctx.fillStyle="black";
+                ctx1.arc(sunX1,sunY1,50,0,2*Math.PI);
+                ctx1.drawImage(image1, sunX1-50, sunY1-50, 100, 100);
+                // ctx.fillStyle="red";
+                // ctx.fill();
+                ctx1.closePath();
+                // Check for boundaries and change direction if needed
+
+                ctx1.beginPath();
+                ctx1.arc(moonX1,moonY1,45,0,2*Math.PI);
+                ctx1.fillStyle="black";
+                ctx1.fill();
+                ctx1.closePath();
+            
+                if(moonX1-sunX1>200){
+                    moonX1=init_moonX1;
+                    moonY1=init_moonY1;
+                    moonVY1=-moonVY1;
+                }
+                if(moonY1-sunY1<0){
+                    moonVY1=-moonVY1;
+                }
+
+
                 // 请求动画帧
                 requestAnimationFrame(animate);
                 // 地球公转的轨道绕Y轴旋转
-                earthOrbit.rotation.y += 0.02;
-                moonOrbit.rotation.y+=0.1;
+                earthOrbit.rotation.y += 0.005;
+                moonOrbit.rotation.y+=0.01;
                 // 地球绕Y轴旋转
-                earth.rotation.y += 0.03;
+                earth.rotation.y += 0.05;
                 // 月球绕Y轴旋转
-                moon.rotation.y += 0.1;
+                moon.rotation.y += 0.15;
 
                 sun .rotation.y+=0.02;
                 // 渲染场景和相机

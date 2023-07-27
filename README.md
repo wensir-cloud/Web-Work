@@ -10,4 +10,5 @@ sudo npm install --global http-server
 http-server --cors
 ```
 2.更换图片路径为自己的路径，即代码中注释update your URL的位置的变量的值。
+
 3.运行main3d.html文件即可

@@ -144,12 +144,13 @@
             function animate() {
                 // 请求动画帧
                 requestAnimationFrame(animate);
-                // 地球公转的轨道绕Y轴旋转
+                // 地球公转的轨道绕Y轴旋转 地球公转
                 earthOrbit.rotation.y += 0.02;
+                //月球公转
                 moonOrbit.rotation.y+=0.1;
-                // 地球绕Y轴旋转
+                // 地球绕Y轴旋转  地球自转
                 earth.rotation.y += 0.03;
-                // 月球绕Y轴旋转
+                // 月球绕Y轴旋转 月球自转
                 moon.rotation.y += 0.1;
 
                 sun .rotation.y+=0.02;

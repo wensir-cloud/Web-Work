@@ -4,21 +4,21 @@
     <title>Simulating 3D Solar System</title>
     <style>
         #canvas_3d {
-            width: 800px;
-            height: 600px;
+            /* width: 800px;
+            height: 600px; */
             position: relative;
-            top:-140px;
+            /* top:-140px; */
         }
-        #canvas_top {
-            width: 600px;
-            height: 600px;
+        /* #canvas_top {
+            /* width: 600px;
+            height: 600px; */
             /* position:relative;
             left:-159px; */
 
-        }
+        /* }  */
         #canvas_left {
-            width: 600px;
-            height: 600px;
+            /* width: 600px;
+            height: 600px; */
             position: relative;
             left:-40px;
         }
@@ -26,6 +26,12 @@
             display: flex;
             list-style: none;
             /* margin: 0px; */
+        }
+        #change{
+            height:200px;
+            background-color: blue;
+            position: relative;
+            top:-700px;
         }
         
     </style>
@@ -89,13 +95,13 @@
 
             // 创建渲染器
             var renderer3D = new THREE.WebGLRenderer({ antialias: true });
-            renderer3D.setSize(window.innerWidth, window.innerHeight);
+            renderer3D.setSize(window.innerWidth/1.1, window.innerHeight/1.1);
 
             var rendererSide = new THREE.WebGLRenderer({ antialias: true });
-            rendererSide.setSize(window.innerWidth/2, window.innerHeight/2);
+            rendererSide.setSize(window.innerWidth/2.2, window.innerHeight/2.2);
 
             var rendererTop = new THREE.WebGLRenderer({ antialias: true });
-            rendererTop.setSize(window.innerWidth/2, window.innerHeight/2);
+            rendererTop.setSize(window.innerWidth/2.2, window.innerHeight/2.2);
             // 将渲染器添加到HTML文档中的canvas元素中
             document.getElementById("canvas_3d").appendChild(renderer3D.domElement);
             document.getElementById("canvas_left").appendChild(rendererSide.domElement);

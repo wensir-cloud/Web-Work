@@ -8,4 +8,4 @@
 sudo npm install --global http-server
 http-server --cors
 ```
-2.更换图片路径为自己的路径，即sunPictureUrl,moonPictureUrl和earthPictureUrl的值。
+2.更换图片路径为自己的路径，即sunPictureUrl,moonPictureUrl，new_earthPictureUrl和earthPictureUrl的值。

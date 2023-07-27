@@ -4,40 +4,70 @@
     <title>Simulating 3D Solar System</title>
     <style>
         #canvas_3d {
-            width: 600px;
+            width: 800px;
             height: 600px;
-            /* background-color: aliceblue; */
+            position: relative;
+            top:-140px;
         }
         #canvas_top {
             width: 600px;
             height: 600px;
-            /* position: relative;
-            left:1500px; */
-            /* top:2000px; */
+            /* position:relative;
+            left:-159px; */
+
         }
         #canvas_left {
             width: 600px;
             height: 600px;
+            position: relative;
+            left:-40px;
         }
+        ul{
+            display: flex;
+            list-style: none;
+            /* margin: 0px; */
+        }
+        
     </style>
 </head>
 <body>
-    <div id="canvas_3d"></div>
-    <div id="canvas_top"></div>
-    <div id="canvas_left"></div> 
+    <ul>
+        <li><div id="canvas_left"></div></li>
+        <li><div id="canvas_top"></div></li>
+    </ul>
+    <!-- <div id="canvas_top"></div>
+    <div id="canvas_left"></div>  -->
+    <div id="canvas_3d">
+        <button id="change">切换</button>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script>
+        var change=0; //初始地球图片
         window.onload = function() {
             // 创建场景
             var scene = new THREE.Scene();
             var sunPictureUrl="http://192.168.1.8:8080/web/Web-Work/sun.png";
             var earthPictureUrl="http://192.168.1.8:8080/web/Web-Work/earth.png";
             var moonPictureUrl="http://192.168.1.8:8080/web/Web-Work/moon.png";
+            var new_earthPictureUrl="http://192.168.1.8:8080/web/Web-Work/new_earth.png";
+
 
             var textureLoader=new THREE.TextureLoader();
             var sunPicture=textureLoader.load(sunPictureUrl);
             var earthPicture=textureLoader.load(earthPictureUrl);
             var moonPicture=textureLoader.load(moonPictureUrl);
+            var new_earthPicture=textureLoader.load(new_earthPictureUrl);
+
+            document.getElementById("change").addEventListener('click',function(){
+                if(change==0){
+                    earthMaterial.map=new_earthPicture;
+                    change=1;
+                }
+                else{
+                    earthMaterial.map=earthPicture;
+                    change=0;
+                }
+            });
 
         //-------------------------3种视图的相机角度---------------------------------
             // Side view camera
@@ -47,7 +77,7 @@
             scene.add(cameraSide);
             // Top view camera
             var cameraTop = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            cameraTop.position.set(0,80, 0);
+            cameraTop.position.set(0,90, 0);
             cameraTop.lookAt(new THREE.Vector3(0, 0, 0));
             scene.add(cameraTop);
             // 3D view camera
@@ -62,17 +92,17 @@
             renderer3D.setSize(window.innerWidth, window.innerHeight);
 
             var rendererSide = new THREE.WebGLRenderer({ antialias: true });
-            rendererSide.setSize(window.innerWidth, window.innerHeight);
+            rendererSide.setSize(window.innerWidth/2, window.innerHeight/2);
 
             var rendererTop = new THREE.WebGLRenderer({ antialias: true });
-            rendererTop.setSize(window.innerWidth, window.innerHeight);
+            rendererTop.setSize(window.innerWidth/2, window.innerHeight/2);
             // 将渲染器添加到HTML文档中的canvas元素中
             document.getElementById("canvas_3d").appendChild(renderer3D.domElement);
             document.getElementById("canvas_left").appendChild(rendererSide.domElement);
             document.getElementById("canvas_top").appendChild(rendererTop.domElement);
             // document.getElementById("canvas_left").appendChild(renderer.domElement);
             // 创建太阳的几何体
-            var sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+            var sunGeometry = new THREE.SphereGeometry(10, 32, 32);
             // 创建太阳的材质
             var sunMaterial = new THREE.MeshBasicMaterial({ map: sunPicture});
             // 创建太阳的网格
@@ -88,7 +118,7 @@
             // 将地球公转的轨道添加到场景中
             scene.add(earthOrbit);
             // 创建地球的几何体
-            var earthGeometry = new THREE.SphereGeometry(1, 32, 32);
+            var earthGeometry = new THREE.SphereGeometry(3, 32, 32);
             // 创建地球的材质
             var earthMaterial = new THREE.MeshBasicMaterial({ map: earthPicture});
             // 创建地球的网格
@@ -108,7 +138,7 @@
 
 
             // 创建月球的公转轨道几何体
-            var moonOrbitGeometry = new THREE.CircleGeometry(2, 64);
+            var moonOrbitGeometry = new THREE.CircleGeometry(4, 64);
             moonOrbitGeometry.vertices.shift(); // Remove the center vertex
             moonOrbitGeometry.rotateX(Math.PI / 2); // Rotate the geometry to align with the XY plane
             var moonOrbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
@@ -122,14 +152,14 @@
             // scene.add(moonOrbit);
 
             // 创建月球的几何体
-            var moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            var moonGeometry = new THREE.SphereGeometry(1, 32, 32);
             // 创建月球的材质
             var moonMaterial = new THREE.MeshBasicMaterial({ map: moonPicture});
             // 创建月球的网格
             var moon = new THREE.Mesh(moonGeometry, moonMaterial);
             
             // 将月球轨道添加到地球
-            moon.position.set(2, 0, 0);
+            moon.position.set(4, 0, 0);
             // earth.add(moon);
             moonOrbit.add(moon);
 
@@ -144,13 +174,12 @@
             function animate() {
                 // 请求动画帧
                 requestAnimationFrame(animate);
-                // 地球公转的轨道绕Y轴旋转 地球公转
+                // 地球公转的轨道绕Y轴旋转
                 earthOrbit.rotation.y += 0.02;
-                //月球公转
                 moonOrbit.rotation.y+=0.1;
-                // 地球绕Y轴旋转  地球自转
+                // 地球绕Y轴旋转
                 earth.rotation.y += 0.03;
-                // 月球绕Y轴旋转 月球自转
+                // 月球绕Y轴旋转
                 moon.rotation.y += 0.1;
 
                 sun .rotation.y+=0.02;
@@ -159,10 +188,10 @@
                 renderer3D.setViewport(0,0,window.innerWidth,window.innerHeight);
                 renderer3D.render(scene, camera3D);
                 
-                rendererSide.setViewport(0,0, window.innerWidth, window.innerHeight);
+                rendererSide.setViewport(0,0, window.innerWidth/2, window.innerHeight/2);
                 rendererSide.render(scene, cameraSide);
                 // // Render top view
-                rendererTop.setViewport(0,-280, window.innerWidth, window.innerHeight);
+                rendererTop.setViewport(0,-130, window.innerWidth/2, window.innerHeight/2);
                 rendererTop.render(scene, cameraTop);
             }
             // 调用动画函数

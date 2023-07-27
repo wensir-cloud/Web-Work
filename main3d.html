@@ -11,6 +11,9 @@
         #canvas_top {
             width: 600px;
             height: 600px;
+            /* position: relative;
+            left:1500px; */
+            /* top:2000px; */
         }
         #canvas_left {
             width: 600px;
@@ -27,6 +30,14 @@
         window.onload = function() {
             // 创建场景
             var scene = new THREE.Scene();
+            var sunPictureUrl="http://192.168.1.8:8080/web/Web-Work/sun.png";
+            var earthPictureUrl="http://192.168.1.8:8080/web/Web-Work/earth.png";
+            var moonPictureUrl="http://192.168.1.8:8080/web/Web-Work/moon.png";
+
+            var textureLoader=new THREE.TextureLoader();
+            var sunPicture=textureLoader.load(sunPictureUrl);
+            var earthPicture=textureLoader.load(earthPictureUrl);
+            var moonPicture=textureLoader.load(moonPictureUrl);
 
         //-------------------------3种视图的相机角度---------------------------------
             // Side view camera
@@ -36,12 +47,12 @@
             scene.add(cameraSide);
             // Top view camera
             var cameraTop = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            cameraTop.position.set(0,120, 0);
+            cameraTop.position.set(0,80, 0);
             cameraTop.lookAt(new THREE.Vector3(0, 0, 0));
             scene.add(cameraTop);
             // 3D view camera
             var camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera3D.position.set(50,50,50);
+            camera3D.position.set(30,30,30);
             camera3D.lookAt(new THREE.Vector3(0, 0, 0));
             scene.add(camera3D);
         //------------------------------------------------------------------------
@@ -63,7 +74,7 @@
             // 创建太阳的几何体
             var sunGeometry = new THREE.SphereGeometry(5, 32, 32);
             // 创建太阳的材质
-            var sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            var sunMaterial = new THREE.MeshBasicMaterial({ map: sunPicture});
             // 创建太阳的网格
             var sun = new THREE.Mesh(sunGeometry, sunMaterial);
             // 将太阳添加到场景中
@@ -79,7 +90,7 @@
             // 创建地球的几何体
             var earthGeometry = new THREE.SphereGeometry(1, 32, 32);
             // 创建地球的材质
-            var earthMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+            var earthMaterial = new THREE.MeshBasicMaterial({ map: earthPicture});
             // 创建地球的网格
             var earth = new THREE.Mesh(earthGeometry, earthMaterial);
             // 将地球添加到地球公转的轨道上
@@ -104,15 +115,23 @@
             var moonOrbitLine = new THREE.LineLoop(moonOrbitGeometry, moonOrbitMaterial);
             earth.add(moonOrbitLine);
 
+            //月球公转轨道
+            var moonOrbit = new THREE.Object3D();
+            moonOrbit.position.set(20, 0, 0);
+            earthOrbit.add(moonOrbit);
+            // scene.add(moonOrbit);
+
             // 创建月球的几何体
             var moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
             // 创建月球的材质
-            var moonMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+            var moonMaterial = new THREE.MeshBasicMaterial({ map: moonPicture});
             // 创建月球的网格
             var moon = new THREE.Mesh(moonGeometry, moonMaterial);
-            // 将月球添加到地球上
+            
+            // 将月球轨道添加到地球
             moon.position.set(2, 0, 0);
-            earth.add(moon);
+            // earth.add(moon);
+            moonOrbit.add(moon);
 
 
             // 设置相机的位置
@@ -126,16 +145,15 @@
                 // 请求动画帧
                 requestAnimationFrame(animate);
                 // 地球公转的轨道绕Y轴旋转
-                earthOrbit.rotation.y += 0.01;
+                earthOrbit.rotation.y += 0.02;
+                moonOrbit.rotation.y+=0.1;
                 // 地球绕Y轴旋转
-                earth.rotation.y += 0.05;
+                earth.rotation.y += 0.03;
                 // 月球绕Y轴旋转
                 moon.rotation.y += 0.1;
-                // 渲染场景和相机
-                // renderer3D.render(scene, camera3D);
-                // rendererSide.render(scene, cameraSide);
-                // rendererTop.render(scene, cameraTop);
 
+                sun .rotation.y+=0.02;
+                // 渲染场景和相机
                 // Render 3D view/3
                 renderer3D.setViewport(0,0,window.innerWidth,window.innerHeight);
                 renderer3D.render(scene, camera3D);
@@ -143,11 +161,8 @@
                 rendererSide.setViewport(0,0, window.innerWidth, window.innerHeight);
                 rendererSide.render(scene, cameraSide);
                 // // Render top view
-                rendererTop.setViewport(0,0, window.innerWidth, window.innerHeight);
+                rendererTop.setViewport(0,-280, window.innerWidth, window.innerHeight);
                 rendererTop.render(scene, cameraTop);
-                // Render 3D view/3
-                // renderer3D.setViewport(0,0,window.innerWidth,window.innerHeight);
-                // renderer3D.render(scene, camera3D);
             }
             // 调用动画函数
             animate();

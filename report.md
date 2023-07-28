@@ -42,3 +42,9 @@ http-server --cors
 
 1. 为了方便为地球换肤，我们通过url而不是相对路径的方式访问图片。但是这样会涉及到跨域访问的问题，需要在`http-server`的启动选项中加上`--cors`。
 2. 相机高度相同时，发现有时俯视图显示不全，通过提高俯视图相机的高度解决。
+
+## 参考资料
+
+1. [Three.js](https://threejs.org/)
+2. [http-server](https://www.npmjs.com/package/http-server)
+3. [[Question] How to set cors headers? - Github Issues](https://github.com/http-party/http-server/issues/308)

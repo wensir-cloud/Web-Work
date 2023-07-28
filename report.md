@@ -27,18 +27,18 @@ script部分是代码的核心部分。下面简单阐述工作流程：
 
 ## 使用说明
 
-首先进入项目根目录，运行`http_server`。
+首先进入项目根目录，运行`http-server`。
 
 ```shell
 npm install --global http-server
 http-server --cors
 ```
 
-`http_server`默认运行在`127.0.0.1:8080`上，如果环境不同，可以自行修改html的代码中`httpServerBaseUrl`的定义。
+`http-server`默认运行在`127.0.0.1:8080`上，如果环境不同，可以自行修改html的代码中`httpServerBaseUrl`的定义。
 
 然后运行`main3d.html`即可看到效果。
 
 ## 问题与解决
 
-1. 为了方便为地球换肤，我们通过url而不是相对路径的方式访问图片。但是这样会涉及到跨域访问的问题，需要在`http_server`的启动选项中加上`--cors`。
+1. 为了方便为地球换肤，我们通过url而不是相对路径的方式访问图片。但是这样会涉及到跨域访问的问题，需要在`http-server`的启动选项中加上`--cors`。
 2. 相机高度相同时，发现有时俯视图显示不全，通过提高俯视图相机的高度解决。
